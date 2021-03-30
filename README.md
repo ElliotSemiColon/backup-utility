@@ -1,2 +1,2 @@
-# backup-utility
-utility program with profiles for backing up multiple directories to multiple locations
+# backup utility software
+manually back up multiple directories in mutliple locations 
