@@ -40,9 +40,12 @@ namespace backup
             foreach(string profile in rawProfiles)
             {
                 string[] profileValues = profile.Trim().Split(","); //removes newlines from profile names and splits them by comma
-                Profile tempProfile = new Profile(profileValues[0], profileValues[1], profileValues[2]); //passes csv to constructor 
-                profiles.Add(tempProfile);
-                tempProfile.OutputContents(); //writes properties to console 
+                if (profileValues.Length != 1)
+                {
+                    Profile tempProfile = new Profile(profileValues[0], profileValues[1], profileValues[2]);//passes csv to constructor 
+                    profiles.Add(tempProfile);
+                    tempProfile.OutputContents(); //writes properties to console 
+                }
             }
         }
 
@@ -62,11 +65,17 @@ namespace backup
             return contents;
         }
 
+        public static void Reset(string path)
+        {
+            File.WriteAllText(path, "", Encoding.UTF8);
+        }
+
         static void Main(string[] args)
         {
-            Console.WriteLine("");
+            Console.WriteLine("backup utility v0");
             //Profile profile = new Profile(@"c:\",@"d:\","bob");
             string configPath = @"config.txt";
+            //Reset(configPath);
             if (!File.Exists(configPath)) { //if the config file doesnt exist in the right directory
                 Console.WriteLine("creating config file");
                 File.Create(configPath).Dispose(); //make a new config file, then close it so the next line can access it
@@ -83,7 +92,7 @@ namespace backup
             Console.WriteLine($"{Profile.count} profiles in total");
 
             //editing profiles
-            profiles.Add(new Profile("steven two!! yeah thats right theres a second one mother fucker", "your momma", "your father"));
+            profiles.Add(new Profile("new record", "path5", "path6"));
 
             //converts list of profiles to a single string to be written back to config if edited 
             configText = Repack(profiles);
