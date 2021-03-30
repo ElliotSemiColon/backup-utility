@@ -40,7 +40,7 @@ namespace backup
             foreach(string profile in rawProfiles)
             {
                 string[] profileValues = profile.Trim().Split(","); //removes newlines from profile names and splits them by comma
-                if (profileValues.Length != 1)
+                if (profileValues.Length == 3) //if profileValues is the right length
                 {
                     Profile tempProfile = new Profile(profileValues[0], profileValues[1], profileValues[2]);//passes csv to constructor 
                     profiles.Add(tempProfile);
