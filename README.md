@@ -1,6 +1,6 @@
 # backup utility software
 ultra-lightweight, simple and easy-to-use local CLI backup tool\
-manually backup multiple directories to mutliple different locations\
+manually backup multiple directories to mutliple different locations
 
 ## useful features
 can store many backup locations which are assigned a profile\
