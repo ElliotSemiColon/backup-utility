@@ -1,0 +1,16 @@
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\backup.csprojAssemblyReference.cache
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\backup.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\backup.AssemblyInfoInputs.cache
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\backup.AssemblyInfo.cs
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\backup.csproj.CoreCompileInputs.cache
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\bin\Debug\net5.0\backup.exe
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\bin\Debug\net5.0\backup.deps.json
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\bin\Debug\net5.0\backup.runtimeconfig.json
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\bin\Debug\net5.0\backup.runtimeconfig.dev.json
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\bin\Debug\net5.0\backup.dll
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\bin\Debug\net5.0\ref\backup.dll
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\bin\Debug\net5.0\backup.pdb
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\backup.dll
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\ref\backup.dll
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\backup.pdb
+C:\Users\ellio\Documents\programming\c#\file-handling\backup\obj\Debug\net5.0\backup.genruntimeconfig.cache

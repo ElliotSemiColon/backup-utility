@@ -105,13 +105,7 @@ namespace backup
                     if (Console.ReadLine().ToLower().Trim() != "y") { loop = false; } //if they dont we exit the loop
                 }
             }
-            catch (FormatException e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("input not in requested format");
-                Console.WriteLine(e);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            catch (FormatException e){Formatting(e);}
         }
 
         public static int LinearSearch(List<Profile> profiles, string name) //linear search for profile of name name
@@ -168,13 +162,7 @@ namespace backup
                     if (Console.ReadLine().ToLower().Trim() != "y") { loop = false; } //if they dont we exit the loop
                 }
             }
-            catch (FormatException e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("input not in requested format");
-                Console.WriteLine(e);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            catch (FormatException e){Formatting(e);}
         }
 
         public static void Reset(string path, List<Profile> profiles) //clears config file
@@ -191,13 +179,7 @@ namespace backup
                 else { Console.WriteLine("kept all profiles"); }
 
             }
-            catch (FormatException e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("input not in requested format");
-                Console.WriteLine(e);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            catch (FormatException e){Formatting(e);}
         }
 
         public static void BackupDialogue(List<Profile> profiles) //method to handle user input around backing files up
@@ -243,13 +225,23 @@ namespace backup
                 }
                 else { Console.WriteLine($"{name} not backed up"); }
             }
-            catch (FormatException e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("input not in requested format");
-                Console.WriteLine(e);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            catch (FormatException e){Formatting(e);}
+        }
+        public static void Formatting(FormatException e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("input not in requested format");
+            Console.WriteLine(e);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        public static void Permission(UnauthorizedAccessException e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("unauthorised access at this level of permission");
+            Console.WriteLine(e);
+            Console.WriteLine("try running the program as admin");
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         //instance methods
@@ -276,40 +268,48 @@ namespace backup
         //the two methods below are both from stack overflow
         public void CreateDirectories()
         {
-            foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+            try
             {
-                Directory.CreateDirectory(dirPath.Replace(sourcePath, backupPath));
+                foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+                {
+                    Directory.CreateDirectory(dirPath.Replace(sourcePath, backupPath));
+                }
             }
+            catch (UnauthorizedAccessException e){Permission(e);}
         }
 
         public void Copy(bool overwrite)
         {
-            //bool noAccessError = true;
-            int[] count = {0, 0, 0}; //number of files that could not be backed up due to skipping, then because of access level. third number is total writes
-            string[] files = Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories);
-            int noFiles = files.Length;
-            foreach (string newPath in files)
+            int[] count = { 0, 0, 0 }; //number of files that could not be backed up due to skipping, then because of access level. third number is total writes
+            try
             {
-                try
+                //bool noAccessError = true;
+                string[] files = Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories);
+                int noFiles = files.Length;
+                foreach (string newPath in files)
                 {
-                    count[2]++;
-                    File.Copy(newPath, newPath.Replace(sourcePath, backupPath), overwrite);
-                    Console.Write($"\r{count[2]-(count[0]+count[1])}/{noFiles} files backed up (do not close the program)");
-                }catch(IOException e) //catches files that cannot be overwritten due to overwrite mode being false
-                {
-                    count[0]++;
-                    Console.WriteLine($">> skipped {newPath.Replace(sourcePath, backupPath)}"); //probably a really bad way to deal with this but it works
-                }catch(UnauthorizedAccessException e)
-                {
-                    count[1]++;
-                    //if (noAccessError)
-                    //{
-                    //    Console.WriteLine("\n>> not a high enough access level for this file! (try running the program as administrator)");
-                    //    Console.WriteLine(e);
-                    //    noAccessError = false;
-                    //}
+                    try
+                    {
+                        count[2]++;
+                        File.Copy(newPath, newPath.Replace(sourcePath, backupPath), overwrite);
+                        Console.Write($"\r{count[2]-(count[0]+count[1])}/{noFiles} files backed up (do not close the program)");
+                    }catch(IOException e) //catches files that cannot be overwritten due to overwrite mode being false
+                    {
+                        count[0]++;
+                        Console.WriteLine($">> skipped {newPath.Replace(sourcePath, backupPath)}"); //probably a really bad way to deal with this but it works
+                    }catch(UnauthorizedAccessException e)
+                    {
+                        count[1]++;
+                        //if (noAccessError)
+                        //{
+                        //    Console.WriteLine("\n>> not a high enough access level for this file! (try running the program as administrator)");
+                        //    Console.WriteLine(e);
+                        //    noAccessError = false;
+                        //}
+                    }
                 }
-            }
+            }catch(UnauthorizedAccessException e){Permission(e);}
+            
             Console.WriteLine($"\n>> {count[0]} files were skipped\n>> {count[1]} files could not be backed up due to insufficient permissions");
         }
           
@@ -353,10 +353,7 @@ namespace backup
             }
             catch (FormatException e)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("input not in requested format");
-                Console.WriteLine(e);
-                Console.ForegroundColor = ConsoleColor.White;
+                Profile.Formatting(e);
                 return true;
             }
         }
