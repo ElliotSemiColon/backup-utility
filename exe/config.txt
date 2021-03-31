@@ -1,1 +1,2 @@
-﻿code,C:\Users\ellio\Documents\programming\c#\vs code,C:\Users\ellio\Documents\programming\program-data\backup test
+﻿test,C:\Users\ellio\Documents\programming\program-data\backup test,C:\Users\ellio\Documents\programming\program-data\sadda
+sdcard,C:\Users\ellio\Documents\programming\c#,D:\vs code

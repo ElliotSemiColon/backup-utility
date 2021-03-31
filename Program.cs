@@ -56,7 +56,7 @@ namespace backup
 
         public static void NewProfile(List<Profile> profiles) //adding profiles
         {
-            Console.WriteLine(">> create a profile");
+            Console.WriteLine("\n>> create a profile");
             try
             {
                 bool loop = true;
@@ -114,34 +114,40 @@ namespace backup
             }
         }
 
+        public static int LinearSearch(List<Profile> profiles, string name) //linear search for profile of name name
+        {
+            for (int i = 0; i < profiles.Count; i++) //linear search
+            {
+                if (profiles[i].name == name)
+                {
+                    Console.WriteLine("profile found");
+                    return i;
+                }
+            }
+            Console.WriteLine("profile not found, try again");
+            return -1;
+        }
+
         public static void RemoveProfile(List<Profile> profiles)
         {
-            Console.WriteLine(">> delete a profile");
+            Console.WriteLine("\n>> delete a profile");
             try
             {
                 bool loop = true;
                 while (loop) //while the user wants to delete profiles
-                {
-                    bool notFound = true;
+                { 
                     int targetIndex = -1;
                     string name = "";
-                    while (notFound)
+                    while (true)
                     {
                         Console.WriteLine("enter name of profile (to escape without deleting a profile, enter 'exit')");
                         name = Console.ReadLine().Trim();
 
                         if (name == "exit") { break; } //checks if the user wants to exit, breaks out of while loop
 
-                        for (int i = 0; i < profiles.Count; i++)
-                        {
-                            if (profiles[i].name == name)
-                            {
-                                Console.WriteLine("profile found");
-                                targetIndex = i;
-                                notFound = false;
-                            }
-                        }
-                        if (targetIndex == -1) { Console.WriteLine("profile not found, try again"); }
+                        targetIndex = Profile.LinearSearch(profiles, name); //returns index of profile with name name
+
+                        if (targetIndex != -1) { break; }
                     }
 
                     if (name == "exit") //checks if the user wants to exit, breaks out of while loop
@@ -171,9 +177,72 @@ namespace backup
             }
         }
 
-        public static void Reset(string path) //clears config file
+        public static void Reset(string path, List<Profile> profiles) //clears config file
         {
-            File.WriteAllText(path, "", Encoding.UTF8);
+            Console.WriteLine("\n>> delete all profiles");
+            try
+            {
+                Console.WriteLine($"are you sure you want to delete {profiles.Count} profile(s)? (y/n)");
+                if (Console.ReadLine().ToLower().Trim() == "y") {
+                    File.WriteAllText(path, "", Encoding.UTF8); //writes config file as blank
+                    profiles.Clear(); //removes all profiles from list
+                    Console.WriteLine($"deleted all profiles");
+                }
+                else { Console.WriteLine("kept all profiles"); }
+
+            }
+            catch (FormatException e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("input not in requested format");
+                Console.WriteLine(e);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+        }
+
+        public static void BackupDialogue(List<Profile> profiles) //method to handle user input around backing files up
+        {
+            Console.WriteLine("\n>> backup a profile");
+            try
+            {
+                int targetIndex = -1;
+                string name = "";
+                while (true)
+                {
+                    Console.WriteLine("enter the profile you wish to backup (to escape without backing up a profile, enter 'exit')");
+                    name = Console.ReadLine().Trim();
+
+                    if (name == "exit") { break; } //checks if the user wants to exit, breaks out of while loop
+
+                    targetIndex = Profile.LinearSearch(profiles, name);
+
+                    if (targetIndex != -1) { break; }
+                }
+
+                if (name == "exit") //checks if the user wants to exit, breaks out of while loop
+                {
+                    Console.WriteLine("exiting backup");
+                    return;
+                }
+
+                Console.WriteLine($"are you sure you want to backup '{name}'? (y/n)");
+
+                if (Console.ReadLine().ToLower().Trim() == "y") 
+                {
+                    Console.WriteLine("do you want to overwrite and update existing files? (y/n)");
+                    bool overwrite = false;
+                    if (Console.ReadLine().ToLower().Trim() == "y") { overwrite = true; } //overwrite is set to true 
+                    profiles[targetIndex].Backup(overwrite);
+                }
+                else { Console.WriteLine($"profile '{name}' was discarded"); }
+            }
+            catch (FormatException e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("input not in requested format");
+                Console.WriteLine(e);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
         }
 
         //instance methods
@@ -181,6 +250,60 @@ namespace backup
         {
             Console.Write($">> name: {name}\n>> source path: {sourcePath}\n>> backup location: {backupPath}");
         }
+
+        public void Backup(bool overwrite)
+        {
+            if(Directory.Exists(sourcePath) && Directory.Exists(backupPath))
+            {
+                //Console.WriteLine($"copying files from \n{sourcePath}\nto {backupPath}");
+                Console.WriteLine("backing up...");
+                CreateDirectories();
+                Copy(overwrite);
+            }
+            else 
+            { 
+                Console.WriteLine("could not backup files as one or more profile directories do not exist");
+            }
+        }
+
+        //the two methods below are both from stack overflow
+        public void CreateDirectories()
+        {
+            foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+            {
+                Directory.CreateDirectory(dirPath.Replace(sourcePath, backupPath));
+            }
+        }
+
+        public void Copy(bool overwrite)
+        {
+            bool noAccessError = true;
+            int[] count = {0, 0, 0}; //number of files that could not be backed up due to skipping, then because of access level. third number is total writes
+            foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    count[2]++;
+                    File.Copy(newPath, newPath.Replace(sourcePath, backupPath), overwrite);
+                    Console.Write($"\r{count[2]} files backed up (do not close the program)");
+                }catch(IOException e) //catches files that cannot be overwritten due to overwrite mode being false
+                {
+                    count[0]++;
+                    Console.WriteLine($"SKIPPED {newPath.Replace(sourcePath, backupPath)}"); //probably a really bad way to deal with this but it works
+                }catch(UnauthorizedAccessException e)
+                {
+                    count[1]++;
+                    if (noAccessError)
+                    {
+                        Console.WriteLine("not a high enough access level (try running the program as administrator)");
+                        Console.WriteLine(e);
+                        noAccessError = false;
+                    }
+                }
+            }
+            Console.WriteLine($"\n>> {count[0]} files were skipped\n>> {count[1]} files could not be backed up due to insufficient permissions (try running the app in administrator mode)");
+        }
+          
         public string getProperties()
         {
             return $"{name},{sourcePath},{backupPath}";
@@ -189,24 +312,30 @@ namespace backup
 
     class Program
     {
-        static void ProfileLoop(List<Profile> profiles)
+        static void ProfileLoop(List<Profile> profiles, string configPath)
         {
             try{
                 bool loop = true;
                 while (loop)
                 {
-                    Console.WriteLine("enter an action to perform on your profiles (create/delete/exit)");
+                    Console.WriteLine("enter an action (backup/create/delete/reset/exit)");
                     string action = Console.ReadLine().ToLower().Trim(); //input
 
                     //outcomes
-                    if (action == "create") { Profile.NewProfile(profiles); }
-                    else if (action == "delete") { Profile.RemoveProfile(profiles); }
-                    else if (action == "exit") 
-                    { 
-                        Console.WriteLine("exiting profile handler");
+                    if (action == "create") { Profile.NewProfile(profiles); } //create profiles
+                    else if (action == "delete") { Profile.RemoveProfile(profiles); } //delete profiles
+                    else if (action == "backup") 
+                    {
+                        if (profiles.Count > 0) { Profile.BackupDialogue(profiles); }
+                        else { Console.WriteLine("you have no profiles to backup, try creating one!"); }
+                    } //backup profiles
+                    else if (action == "reset") { Profile.Reset(configPath, profiles); } //delete all profiles
+                    else if (action == "exit") //exit the program
+                    {
+                        Console.WriteLine("saving and exiting...");
                         loop = false; //no longer loops if user exits
                     }
-                    else { Console.WriteLine("invalid action"); }
+                    else { Console.WriteLine("invalid action"); } //didnt choose one of the above
                 }
             }
             catch (FormatException e)
@@ -231,6 +360,8 @@ namespace backup
             }
             else { Console.WriteLine("config file found"); }
 
+            Console.WriteLine("when adding profiles, make sure to exit using the exit command to save them in the config file");
+
             string configText = File.ReadAllText(configPath, Encoding.UTF8);
 
             Console.WriteLine("\ndiscovered profiles:");
@@ -242,15 +373,16 @@ namespace backup
 
             //editing profiles
             //profiles.Add(new Profile("new record", "path5", "path6"));
-            ProfileLoop(profiles);
+            ProfileLoop(profiles, configPath);
 
             //converts list of profiles to a single string to be written back to config if edited 
             configText = Profile.Repack(profiles);
 
-            Console.WriteLine($"\nwriting:\n{configText}");
+            //Console.WriteLine($"\nwriting:\n{configText}");
             File.WriteAllText(configPath, configText, Encoding.UTF8);
-            Console.WriteLine("config file updated");
+            Console.WriteLine(">> any profile changes were saved");
 
+            Console.WriteLine("press any key to close this window");
             Console.ReadKey();
         }
     }
