@@ -202,14 +202,14 @@ namespace backup
 
         public static void BackupDialogue(List<Profile> profiles) //method to handle user input around backing files up
         {
-            Console.WriteLine("\n>> backup a profile");
+            Console.WriteLine("\n>> back up a profile");
             try
             {
                 int targetIndex = -1;
                 string name = "";
                 while (true)
                 {
-                    Console.WriteLine("enter the profile you wish to backup (to escape without backing up a profile, enter 'exit')\nif you wish to back up all your profiles, enter 'all'");
+                    Console.WriteLine("enter the profile you wish to back up (to escape without backing up a profile, enter 'exit')\nif you wish to back up all your profiles, enter 'all'");
                     name = Console.ReadLine().Trim();
 
                     if ((name == "exit")||(name == "all")) { break; } //checks if the user wants to exit or backup all profiles, breaks out of while loop
@@ -225,7 +225,7 @@ namespace backup
                     return;
                 }
 
-                Console.WriteLine($"are you sure you want to backup {name}? (y/n)");
+                Console.WriteLine($"are you sure you want to back up {name}? (y/n)");
 
                 if (Console.ReadLine().ToLower().Trim() == "y") 
                 {
@@ -298,7 +298,7 @@ namespace backup
                 }catch(IOException e) //catches files that cannot be overwritten due to overwrite mode being false
                 {
                     count[0]++;
-                    Console.WriteLine($"SKIPPED {newPath.Replace(sourcePath, backupPath)}"); //probably a really bad way to deal with this but it works
+                    Console.WriteLine($">> skipped {newPath.Replace(sourcePath, backupPath)}"); //probably a really bad way to deal with this but it works
                 }catch(UnauthorizedAccessException e)
                 {
                     count[1]++;
@@ -335,7 +335,7 @@ namespace backup
                     else if (action == "backup") 
                     {
                         if (profiles.Count > 0) { Profile.BackupDialogue(profiles); }
-                        else { Console.WriteLine("you have no profiles to backup, try creating one!"); }
+                        else { Console.WriteLine("you have no profiles to back up, try creating one!"); }
                     } //backup profiles
                     else if (action == "reset") { Profile.Reset(configPath, profiles); } //delete all profiles
                     else if (action == "exit") //exit the program
