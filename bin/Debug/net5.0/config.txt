@@ -1,5 +1,0 @@
-﻿sdcard,C:\Users\ellio\Documents\programming\c#,D:\vs code
-art,C:\Users\ellio\Documents\drawing\krita,D:\art
-famitracker,C:\Users\ellio\Documents\famitracker,D:\famitracker
-college work,C:\Users\ellio\Documents\college work,D:\college work
-upload to repo,C:\Users\ellio\Documents\programming\c#\vs code\file-handling\backup,C:\Users\ellio\Documents\programming\c#\vs code\git repos\backup
