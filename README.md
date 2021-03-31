@@ -8,7 +8,8 @@ these can be referenced and backed up to quickly and easily\
 theyre saved to a file so you don't have to specify locations each time you want to back something up
 
 ## example of the program in use
-![image](https://user-images.githubusercontent.com/45922387/113188105-8b2e3680-9251-11eb-8d51-f19fe954e4b5.png)
+![image](https://user-images.githubusercontent.com/45922387/113189842-8d919000-9253-11eb-9d18-63f594ed2eab.png)
+
 
 
 
