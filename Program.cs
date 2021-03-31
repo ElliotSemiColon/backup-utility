@@ -277,15 +277,17 @@ namespace backup
 
         public void Copy(bool overwrite)
         {
-            bool noAccessError = true;
+            //bool noAccessError = true;
             int[] count = {0, 0, 0}; //number of files that could not be backed up due to skipping, then because of access level. third number is total writes
-            foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
+            string[] files = Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories);
+            int noFiles = files.Length;
+            foreach (string newPath in files)
             {
                 try
                 {
                     count[2]++;
                     File.Copy(newPath, newPath.Replace(sourcePath, backupPath), overwrite);
-                    Console.Write($"\r{count[2]} files backed up (do not close the program)");
+                    Console.Write($"\r{count[2]-(count[0]+count[1])}/{noFiles} files backed up (do not close the program)");
                 }catch(IOException e) //catches files that cannot be overwritten due to overwrite mode being false
                 {
                     count[0]++;
@@ -293,12 +295,12 @@ namespace backup
                 }catch(UnauthorizedAccessException e)
                 {
                     count[1]++;
-                    if (noAccessError)
-                    {
-                        Console.WriteLine("not a high enough access level (try running the program as administrator)");
-                        Console.WriteLine(e);
-                        noAccessError = false;
-                    }
+                    //if (noAccessError)
+                    //{
+                    //    Console.WriteLine("\n>> not a high enough access level for this file! (try running the program as administrator)");
+                    //    Console.WriteLine(e);
+                    //    noAccessError = false;
+                    //}
                 }
             }
             Console.WriteLine($"\n>> {count[0]} files were skipped\n>> {count[1]} files could not be backed up due to insufficient permissions (try running the app in administrator mode)");
