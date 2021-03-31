@@ -260,10 +260,10 @@ namespace backup
 
         public void Backup(bool overwrite)
         {
-            if(Directory.Exists(sourcePath) && Directory.Exists(backupPath))
+            Console.WriteLine($"backing up {name}...");
+            if (Directory.Exists(sourcePath) && Directory.Exists(backupPath))
             {
                 //Console.WriteLine($"copying files from \n{sourcePath}\nto {backupPath}");
-                Console.WriteLine($"backing up {name}...");
                 CreateDirectories();
                 Copy(overwrite);
             }
