@@ -149,7 +149,7 @@ namespace backup
             return -1;
         }
 
-        public static void RemoveProfile(List<Profile> profiles)
+        public static void Remove(List<Profile> profiles)
         {
             Console.WriteLine("\n>> delete a profile");
             try
@@ -228,6 +228,7 @@ namespace backup
 
         public static void Backup(List<Profile> profiles) //method to handle user input around backing files up
         {
+
             Console.WriteLine("\n>> back up a profile");
             try
             {
@@ -335,6 +336,8 @@ namespace backup
 
         public void Copy(bool overwrite)
         {
+            List<string> skipped = new List<string>();
+            string current = "";
             int[] count = { 0, 0, 0 }; //number of files that could not be backed up due to skipping, then because of access level. third number is total writes
             try
             {
@@ -343,17 +346,21 @@ namespace backup
                 int noFiles = files.Length;
                 foreach (string newPath in files)
                 {
+                    Console.Write($"\r{count[2] - (count[0] + count[1])}/{noFiles} files backed up (do not close the program)");
+
                     try
                     {
                         count[2]++;
                         File.Copy(newPath, newPath.Replace(sourcePath, backupPath), overwrite);
-                        Console.Write($"\r{count[2]-(count[0]+count[1])}/{noFiles} files backed up (do not close the program)");
+
                     }catch(IOException e) //catches files that cannot be overwritten due to overwrite mode being false
                     {
+                        skipped.Add(newPath.Replace(sourcePath, backupPath));
                         count[0]++;
-                        Console.WriteLine($">> skipped {newPath.Replace(sourcePath, backupPath)}"); //probably a really bad way to deal with this but it works
+                        //Console.WriteLine($">> skipped {newPath.Replace(sourcePath, backupPath)}"); //probably a really bad way to deal with this but it works
                     }catch(UnauthorizedAccessException e)
                     {
+                        skipped.Add(newPath.Replace(sourcePath, backupPath));
                         count[1]++;
                         //if (noAccessError)
                         //{
@@ -365,7 +372,7 @@ namespace backup
                 }
             }catch(UnauthorizedAccessException e){Permission(e);}
             
-            Console.WriteLine($"\n>> {count[0]} files were skipped\n>> {count[1]} files could not be backed up due to insufficient permissions");
+            Console.WriteLine($"\n>> {count[0]} files were not overwritten\n>> {count[1]} files could not be backed up due to insufficient permissions\n\nall files skipped:\n{string.Join('\n', skipped)}");
         }
           
         public string getProperties()
@@ -382,7 +389,7 @@ namespace backup
                 while (true)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine("\nenter action (enter 'help' for actions)");
+                    Console.WriteLine("enter action (enter 'help' for actions)");
 
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     string action = Console.ReadLine().ToLower().Trim(); //input
@@ -400,16 +407,19 @@ namespace backup
                             "reset - delete ALL profiles\n" +
                             "exit - save and exits\n" +
                             "exit w/o saving - exit the program WITHOUT saving changes made in a session");
+                        Console.WriteLine();
                     }
-                    else if (action == "profiles") { Profile.showProfiles(profiles); }
-                    else if (action == "create") { Profile.NewProfile(profiles); } //create profiles
-                    else if (action == "delete") { Profile.RemoveProfile(profiles); } //delete profiles
+                    else if (action == "profiles") { Profile.showProfiles(profiles); Console.WriteLine(); }
+                    else if (action == "create") { Profile.NewProfile(profiles); Console.WriteLine(); } //create profiles
+                    else if (action == "delete") { Profile.Remove(profiles); Console.WriteLine(); } //delete profiles
                     else if (action == "backup") 
                     {
                         if (profiles.Count > 0) { Profile.Backup(profiles); }
                         else { Console.WriteLine("you have no profiles to back up, try creating one!"); }
+
+                        Console.WriteLine();
                     } //backup profiles
-                    else if (action == "reset") { Profile.Reset(configPath, profiles); } //delete all profiles
+                    else if (action == "reset") { Profile.Reset(configPath, profiles); Console.WriteLine(); } //delete all profiles
                     else if (action == "exit") //exit the program
                     {
                         Console.WriteLine("\n>> saving...");
@@ -450,6 +460,7 @@ namespace backup
             List<Profile> profiles = new List<Profile>(); //makes an empty list of profiles
             Profile.Unpack(configText, profiles); //converts file string to profile objects and adds them to a list
 
+            Console.WriteLine();
             //editing profiles
             //profiles.Add(new Profile("new record", "path5", "path6"));
             bool save = ProfileLoop(profiles, configPath);
