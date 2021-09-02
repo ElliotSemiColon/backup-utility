@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace backup
 {
+
     class Profile //class for managing creation, deletion, unpacking from file and packing profiles as well as instances of them
     {
         private string sourcePath; //file/folder which is being copied from 
@@ -33,8 +34,20 @@ namespace backup
                 {
                     Profile tempProfile = new Profile(profileValues[0], profileValues[1], profileValues[2]);//passes csv to constructor 
                     profiles.Add(tempProfile);
-                    Console.WriteLine(tempProfile.name); //writes properties to console 
+                    //Console.WriteLine(tempProfile.name); //writes properties to console 
                 }
+            }
+
+            showProfiles(profiles);
+        }
+
+        public static void showProfiles(List<Profile> profiles)
+        {
+            Console.WriteLine($"\n>> discovered {profiles.Count} profiles");
+
+            foreach(Profile profile in profiles)
+            {
+                Console.WriteLine($"'{profile.name}', {profile.sourcePath} -> {profile.backupPath}"); //writes properties to console 
             }
         }
 
@@ -68,7 +81,10 @@ namespace backup
                     while (badName)
                     {//while name is not unique
                         Console.WriteLine("enter name for profile (to escape without creating a new profile, enter 'exit')");
+
+                        Console.ForegroundColor = ConsoleColor.Cyan;
                         name = Console.ReadLine().Trim();
+                        Console.ForegroundColor = ConsoleColor.White;
 
                         if (name == "exit") { break; } //checks if the user wants to exit, breaks out of while loop
 
@@ -85,23 +101,34 @@ namespace backup
                     }
 
                     Console.WriteLine("enter directory to copy from");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     string sourcePath = Console.ReadLine().Trim();
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine("enter directory to copy to");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     string backupPath = Console.ReadLine().Trim();
+                    Console.ForegroundColor = ConsoleColor.White;
                     Profile tempProfile = new Profile(name, sourcePath, backupPath);
 
                     Console.WriteLine("entered details:");
                     tempProfile.OutputContents();
                     Console.WriteLine($"\nare you sure you want to add {name}? (y/n)");
 
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if (Console.ReadLine().ToLower().Trim() == "y") //if they enter yes
                     {
+                        Console.ForegroundColor = ConsoleColor.White;
                         profiles.Add(tempProfile); //add the profile to list of profiles
                         Console.WriteLine($"sucessfully added {name}");
                     }
-                    else { Console.WriteLine($"profile {name} was discarded"); }
+                    else {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($"profile {name} was discarded"); 
+                    }
 
                     Console.WriteLine("enter another profile? (y/n)"); //if the user wants to write a new profile
+
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if (Console.ReadLine().ToLower().Trim() != "y") { loop = false; } //if they dont we exit the loop
                 }
             }
@@ -135,7 +162,10 @@ namespace backup
                     while (true)
                     {
                         Console.WriteLine("enter name of profile (to escape without deleting a profile, enter 'exit')");
+
+                        Console.ForegroundColor = ConsoleColor.Cyan;
                         name = Console.ReadLine().Trim();
+                        Console.ForegroundColor = ConsoleColor.White;
 
                         if (name == "exit") { break; } //checks if the user wants to exit, breaks out of while loop
 
@@ -151,14 +181,21 @@ namespace backup
                     }
                     Console.WriteLine($"are you sure you want to delete {name}? (y/n)");
 
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if ((targetIndex != -1) && (Console.ReadLine().ToLower().Trim() == "y")) //removes profile at target index if found (-1 signifies 404)
                     {
+                        Console.ForegroundColor = ConsoleColor.White;
                         profiles.RemoveAt(targetIndex);
                         Console.WriteLine($"sucessfully removed {name}");
                     }
-                    else { Console.WriteLine($"kept profile {name}"); }
+                    else {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($"kept profile {name}");
+                    }
 
                     Console.WriteLine("delete another profile? (y/n)"); //if the user wants to delete a new profile
+
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if (Console.ReadLine().ToLower().Trim() != "y") { loop = false; } //if they dont we exit the loop
                 }
             }
@@ -171,18 +208,25 @@ namespace backup
             try
             {
                 Console.WriteLine($"are you sure you want to delete {profiles.Count} profile(s)? (y/n)");
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 if (Console.ReadLine().ToLower().Trim() == "y") {
-                    File.WriteAllText(path, "", Encoding.UTF8); //writes config file as blank
+
+                    Console.ForegroundColor = ConsoleColor.White;
+                    //File.WriteAllText(path, "", Encoding.UTF8); //writes config file as blank
                     profiles.Clear(); //removes all profiles from list
                     Console.WriteLine($"deleted all profiles");
                 }
-                else { Console.WriteLine("kept all profiles"); }
+                else {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("kept all profiles"); 
+                }
 
             }
             catch (FormatException e){Formatting(e);}
         }
 
-        public static void BackupDialogue(List<Profile> profiles) //method to handle user input around backing files up
+        public static void Backup(List<Profile> profiles) //method to handle user input around backing files up
         {
             Console.WriteLine("\n>> back up a profile");
             try
@@ -192,7 +236,10 @@ namespace backup
                 while (true)
                 {
                     Console.WriteLine("enter the profile you wish to back up (to escape without backing up a profile, enter 'exit')\nif you wish to back up all your profiles, enter 'all'");
+                    
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     name = Console.ReadLine().Trim();
+                    Console.ForegroundColor = ConsoleColor.White;
 
                     if ((name == "exit")||(name == "all")) { break; } //checks if the user wants to exit or backup all profiles, breaks out of while loop
 
@@ -209,10 +256,14 @@ namespace backup
 
                 Console.WriteLine($"are you sure you want to back up {name}? (y/n)");
 
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 if (Console.ReadLine().ToLower().Trim() == "y") 
                 {
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine("do you want to overwrite and update existing files? (y/n)");
                     bool overwrite = false;
+
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     if (Console.ReadLine().ToLower().Trim() == "y") { overwrite = true; } //overwrite is set to true 
                     if (targetIndex != -1) { profiles[targetIndex].Backup(overwrite); }
                     else
@@ -223,7 +274,10 @@ namespace backup
                         }
                     }
                 }
-                else { Console.WriteLine($"{name} not backed up"); }
+                else {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"{name} not backed up");
+                }
             }
             catch (FormatException e){Formatting(e);}
         }
@@ -252,6 +306,7 @@ namespace backup
 
         public void Backup(bool overwrite)
         {
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($"backing up {name}...");
             if (Directory.Exists(sourcePath) && Directory.Exists(backupPath))
             {
@@ -326,15 +381,32 @@ namespace backup
             try{
                 while (true)
                 {
-                    Console.WriteLine("\nenter an action (backup/create/delete/reset/exit/exit without saving)");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("\nenter action (enter 'help' for actions)");
+
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     string action = Console.ReadLine().ToLower().Trim(); //input
+                    Console.ForegroundColor = ConsoleColor.White;
 
                     //outcomes
-                    if (action == "create") { Profile.NewProfile(profiles); } //create profiles
+                    if (action == "help")
+                    {
+                        Console.WriteLine("\n>> actions: \n" +
+                            "help - bring up this dialogue\n" +
+                            "profiles - show all profiles saved to config\n" +
+                            "backup - copy files according to a specified profile\n" +
+                            "create - set up a new profile\n" +
+                            "delete - remove a profile\n" +
+                            "reset - delete ALL profiles\n" +
+                            "exit - save and exits\n" +
+                            "exit w/o saving - exit the program WITHOUT saving changes made in a session");
+                    }
+                    else if (action == "profiles") { Profile.showProfiles(profiles); }
+                    else if (action == "create") { Profile.NewProfile(profiles); } //create profiles
                     else if (action == "delete") { Profile.RemoveProfile(profiles); } //delete profiles
                     else if (action == "backup") 
                     {
-                        if (profiles.Count > 0) { Profile.BackupDialogue(profiles); }
+                        if (profiles.Count > 0) { Profile.Backup(profiles); }
                         else { Console.WriteLine("you have no profiles to back up, try creating one!"); }
                     } //backup profiles
                     else if (action == "reset") { Profile.Reset(configPath, profiles); } //delete all profiles
@@ -343,7 +415,7 @@ namespace backup
                         Console.WriteLine("\n>> saving...");
                         return true;
                     }
-                    else if(action == "exit without saving")
+                    else if(action == "exit w/o saving")
                     {
                         Console.WriteLine("\n>> exiting...");
                         return false;
@@ -375,12 +447,8 @@ namespace backup
 
             string configText = File.ReadAllText(configPath, Encoding.UTF8);
 
-            Console.WriteLine("\n>> discovered profiles");
-
             List<Profile> profiles = new List<Profile>(); //makes an empty list of profiles
             Profile.Unpack(configText, profiles); //converts file string to profile objects and adds them to a list
-            
-            Console.WriteLine($"found {Profile.count} profile(s)");
 
             //editing profiles
             //profiles.Add(new Profile("new record", "path5", "path6"));
