@@ -1,4 +1,4 @@
-# Backup organisation software
+# Manual local backup software
 - Lightweight, simple and easy-to-use local CLI backup tool
 - Manually backup multiple directories to mutliple different locations
 - Uses a profile system to keep track of and identify potentially unlimited pairs of source and backup locations
