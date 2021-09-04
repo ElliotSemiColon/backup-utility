@@ -1,8 +1,8 @@
 # Backup organisation software
 - Lightweight, simple and easy-to-use local CLI backup tool\
 - Manually backup multiple directories to mutliple different locations\
-- Uses a profile system to keep track of and identify potentially unlimited pairs of source and backup locations in local storage\
-\
+- Uses a profile system to keep track of and identify potentially unlimited pairs of source and backup locations\
+
 ## How can I use it?
 [Download the zip file](https://github.com/elliot-mb/backup-utility/raw/master/backup-tool.rar) and extract it to a folder, then simply run the exe.
 
