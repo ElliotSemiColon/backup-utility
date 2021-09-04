@@ -4,7 +4,7 @@
 - Uses a profile system to keep track of and identify potentially unlimited pairs of source and backup locations
 
 ## Download
-[backup-tool.rar](https://github.com/elliot-mb/backup-utility/raw/master/backup-tool.rar)\
+[> backup-tool.rar](https://github.com/elliot-mb/backup-utility/raw/master/backup-tool.rar)\
 Extract the zip to a folder and run the exe
 
 
