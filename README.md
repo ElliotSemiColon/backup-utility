@@ -9,7 +9,10 @@ If the program doesn't run, you may need to install [.NET Core 3.1](https://dotn
 [backup-tool.rar](https://github.com/elliot-mb/backup-utility/raw/master/backup-tool.rar)
 
 ## Demonstration of program
+![example](https://user-images.githubusercontent.com/45922387/132104740-f558dafa-e320-4b05-8c00-9136b93380e9.gif)\
+\
 ![image](https://user-images.githubusercontent.com/45922387/131898659-b4836337-9f58-41f9-a47f-affad903f4a4.png)
+
 
 
 
