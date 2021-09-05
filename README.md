@@ -5,7 +5,8 @@
 
 ## Download _(only tested on Windows)_
 Extract the .rar to a folder and run the exe\
-If the program doesn't run, you may need to install [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet/3.1)\
+If the program doesn't run, you may need to install [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet/3.1)
+### Versions
 
 
 ## Demonstration of program
