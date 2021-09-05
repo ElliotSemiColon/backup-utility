@@ -7,7 +7,8 @@
 Extract the .rar to a folder and run the exe\
 If the program doesn't run, you may need to install [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet/3.1)
 ### Versions
-
+- [v0.3a](https://github.com/elliot-mb/backup-utility/releases/tag/v0.3-alpha)
+- [v0.1a]()
 
 ## Demonstration of program
 \
