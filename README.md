@@ -3,7 +3,7 @@
 - Manually backup multiple directories to mutliple different locations
 - Uses a profile system to keep track of and identify potentially unlimited pairs of source and backup locations
 
-## Download _(only tested on Windows)_
+## Download _(only packaged for Windows)_
 Extract the .rar to a folder and run the exe\
 If the program doesn't run, you may need to install [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet/3.1)
 ### Versions
