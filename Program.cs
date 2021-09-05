@@ -372,6 +372,9 @@ namespace backup
             }
 
             int removed = 0;
+            string overwriteText = "";
+
+            if (!overwrite) { overwriteText = $"/able to overwrite (overwrite set {overwrite})"; }
 
             //prunes files that are dated older than the last backup (meaning they would have been updated last time and havent been changed since)
             for(int i = 0; i < sourceFiles.Count; i++)
@@ -381,14 +384,18 @@ namespace backup
                 DateTime creation = File.GetCreationTime(path);
                 DateTime modification = File.GetLastWriteTime(path);
 
-                if(recentDate(recentDate(creation, modification), lastEnvoked) == lastEnvoked && Contains(backupFiles, path)) { 
+                if((!overwrite || recentDate(recentDate(creation, modification), lastEnvoked) == lastEnvoked) && Contains(backupFiles, path)) { 
                     sourceFiles.RemoveAt(i);
                     i--;
                     removed++;
                 }
 
-                Console.Write($"\r{sourceFiles.Count}/{removed} file(s) in source added/edited since last backup @ {lastEnvoked}       ");
+                if(i % 20 == 0)
+                {
+                    Console.Write($"\r{sourceFiles.Count} file(s) in source added/edited{overwriteText} since last backup @ {lastEnvoked}       ");
+                }
             }
+            Console.Write($"\r{sourceFiles.Count} file(s) in source added/edited{overwriteText} since last backup @ {lastEnvoked}       ");
             Console.WriteLine();
 
             //writes files to the folder
