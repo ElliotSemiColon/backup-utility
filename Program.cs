@@ -10,8 +10,8 @@ namespace backup
     {
         private string sourcePath; //file/folder which is being copied from 
         private string backupPath; //file/folder which its contents get pasted to 
-        public string name; //name of profile
 
+        public string name; //name of profile
         public static int count; //number of profiles
 
         public Profile(string _name, string _sourcePath, string _backupPath) //constructor
@@ -199,6 +199,7 @@ namespace backup
 
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     if (Console.ReadLine().ToLower().Trim() != "y") { loop = false; } //if they dont we exit the loop
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
             catch (FormatException e) { Formatting(e); }
@@ -343,40 +344,54 @@ namespace backup
         {
             List<string> skipped = new List<string>();
 
-            int noFiles, successes = 0, failures = 0;
+            int noFiles, successes = 0, failures = 0, data = 0;
+
+            DateTime lastEnvoked = new DateTime(1999, 1, 1, 0, 0, 0, 0);
 
             string[] sourceArr = Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories);
             string[] backupArr = Directory.GetFiles(backupPath, "*.*", SearchOption.AllDirectories);
 
             //List of Uri objects to easily access data about each file
-            List<Uri> sourceFiles = new List<Uri>(), backupFiles = new List<Uri>(); 
+            List<Uri> sourceFiles = new List<Uri>(), backupFiles = new List<Uri>();
 
             foreach (string file in sourceArr) { sourceFiles.Add(new Uri(file)); }
             foreach (string file in backupArr) { backupFiles.Add(new Uri(file)); }
 
-            //sets sourceFiles to contain only files that've been changed (if overwrite set true) or that do not exist in backup
-            foreach (Uri uri in backupFiles) 
+            //works out when the last backup/change was by finding the most recently updated file
+            //this is useful so that all files more recently changed than this can be modified
+            foreach (Uri uri in backupFiles)
             {
-                string dest = uri.LocalPath;
+                string path = uri.LocalPath;
 
-                for (int i = 0; i < sourceFiles.Count; i++)
-                {
-                    string src = sourceFiles[i].LocalPath;
+                //time in milliseconds
+                DateTime creation = File.GetCreationTime(path);
+                DateTime modification = File.GetLastWriteTime(path);
 
-                    if (Path.GetFileName(dest) == Path.GetFileName(src)) //if the files have the same Uri
-                    {
-                        //if the file's data is idental or the function is set to not overwrite, the file will not be updated
-                        if (CompareFiles(src, dest) || !overwrite) 
-                        {
-                            sourceFiles.RemoveAt(i);
-                            i--; //decrements i since list got one item smaller (otherwise items are skipped)
-                        }
-                    }
+                lastEnvoked = recentDate(recentDate(creation, modification), lastEnvoked);
+
+            }
+
+            int removed = 0;
+
+            //prunes files that are dated older than the last backup (meaning they would have been updated last time and havent been changed since)
+            for(int i = 0; i < sourceFiles.Count; i++)
+            {
+                string path = sourceFiles[i].LocalPath;
+
+                DateTime creation = File.GetCreationTime(path);
+                DateTime modification = File.GetLastWriteTime(path);
+
+                if(recentDate(recentDate(creation, modification), lastEnvoked) == lastEnvoked && Contains(backupFiles, path)) { 
+                    sourceFiles.RemoveAt(i);
+                    i--;
+                    removed++;
                 }
-                Console.Write($"\rdiscovered {sourceFiles.Count} files to update...                         ");
+
+                Console.Write($"\r{sourceFiles.Count}/{removed} file(s) in source added/edited since last backup @ {lastEnvoked}       ");
             }
             Console.WriteLine();
 
+            //writes files to the folder
             if (sourceFiles.Count > 0)
             {
                 //replaces files in backupFiles that are left in sourceFiles 
@@ -390,6 +405,7 @@ namespace backup
                     try
                     {
                         File.Copy(src, dest, overwrite); //overwrite is always true as existing files have been removed in the prior method
+                        data += (int)(new FileInfo(src).Length / 1000000);
                         successes++;
                     }
                     catch (IOException)
@@ -398,70 +414,50 @@ namespace backup
                         failures++;
                     }
 
-                    Console.Write($"\rupdated {successes}/{noFiles} files...");
+                    Console.Write($"\rupdated {successes}/{noFiles} files ({data}MBs)");
                 }
                 if (noFiles > 0) { Console.WriteLine(); } //if there were files to update make a new line from \r
 
-                Console.WriteLine($"made {successes} changes with {failures} failures");
+                Console.WriteLine($">> made {successes} changes with {failures} failures (overwrite set {overwrite})");
+
+                sourceFiles.Clear();
+                backupFiles.Clear();
             }
         }
 
-        private bool CompareFiles(string filePath1, string filePath2) 
+        private DateTime recentDate(DateTime date1, DateTime date2)
         {
-            //compares large files without using up huge amounts of memory
-            //this is done by reading both files in small sequential chunks and comparing each of these chunks
-            //it is more processor intensive but far less memory intensive 
+            DateTime recent = new DateTime();
+            int result = DateTime.Compare(date1, date2);
 
-            FileInfo fp1 = new FileInfo(filePath1);
-            FileInfo fp2 = new FileInfo(filePath2);
-            int bytes = (int) fp1.Length;
+            //sets recent to the most recent time
+            if (result < 0) { recent = date2; }
+            if (result == 0) { recent = date1; } //theyre the same time (set to any)
+            if (result > 0) { recent = date1; }
 
-            if (bytes != fp2.Length) { return false; }
-
-            FileStream source = new FileStream(filePath1, FileMode.Open, FileAccess.Read);
-            FileStream backup = new FileStream(filePath2, FileMode.Open, FileAccess.Read);
-
-            int width = 1024; //1KB chunks
-            byte[] srcBytes = new byte[width];
-            byte[] bkpBytes = new byte[width];
-
-            for (int n = 1; n < bytes; n += width)
-            {
-                //j = width;
-
-                //if (bytes - offset - 1 == 0) { return true; }
-                //if (offset + width > bytes) { j = bytes - offset; }
-
-                //Console.WriteLine($"{offset}, {j}, {offset + j}");
-
-                source.Read(srcBytes, 0, width);
-                backup.Read(bkpBytes, 0, width);
-
-                //Console.WriteLine(string.Join(",", srcBytes));
-
-                //Console.WriteLine($"{string.Join(",", srcBytes)} -- {string.Join(",", bkpBytes)} -- {srcBytes != bkpBytes}");
-
-                if (!CompareBytes(srcBytes, bkpBytes)) //if theyre not equal
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return recent;
         }
 
-        private bool CompareBytes(byte[] arr1, byte[] arr2) 
+        //private bool Contains<T>(List<T> list, T target)
+        //{
+        //    foreach(T item in list){ if(item == target) { return true; } }
+
+        //    return false;
+        //}
+
+        private bool Contains(List<Uri> files, string targetPath) //if uri list contains target file
         {
-            if (arr1.Length != arr2.Length)
+            string path, itemName, targetName = Path.GetFileName(targetPath);
+
+            foreach(Uri uri in files)
             {
-                return false;
-            }
-            for(int i = 0; i < arr1.Length; i++)
-            {
-                if(arr1[i] != arr2[i]) { return false; }
+                path = uri.LocalPath;
+                itemName = Path.GetFileName(path);
+                
+                if(itemName == targetName){ return true; }
             }
 
-            return true;
+            return false;
         }
 
         public string GetProperties()
