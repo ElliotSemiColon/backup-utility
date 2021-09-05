@@ -390,7 +390,7 @@ namespace backup
                     removed++;
                 }
 
-                if(i % 20 == 0)
+                if(removed % 20 == 0)
                 {
                     Console.Write($"\r{sourceFiles.Count} file(s) in source added/edited{overwriteText} since last backup @ {lastEnvoked}       ");
                 }
