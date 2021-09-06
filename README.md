@@ -11,6 +11,8 @@ If the program doesn't run, you may need to install [.NET Core 3.1](https://dotn
 - [v0.1a](https://github.com/elliot-mb/backup-utility/releases/tag/v0.1-alpha)
 
 ## Demonstration of program
+![image](https://user-images.githubusercontent.com/45922387/132213008-89e21c81-4705-4788-a769-6eaebe6e829d.png)\
+\
 v0.3a _capable of backing up large numbers of files_\
 ![image](https://user-images.githubusercontent.com/45922387/132136909-4c153158-02da-4f98-91ea-3d090fee9198.png)\
 \
