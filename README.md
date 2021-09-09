@@ -6,9 +6,6 @@
 ## Download _(only packaged for Windows)_
 Extract the .rar to a folder and run the exe\
 If the program doesn't run, you may need to install [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet/3.1)
-### Versions
-- [v0.3a](https://github.com/elliot-mb/backup-utility/releases/tag/v0.3-alpha)
-- [v0.1a](https://github.com/elliot-mb/backup-utility/releases/tag/v0.1-alpha)
 
 ## Demonstration of program
 ![image](https://user-images.githubusercontent.com/45922387/132213008-89e21c81-4705-4788-a769-6eaebe6e829d.png)\
