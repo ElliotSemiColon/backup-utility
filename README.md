@@ -2,7 +2,7 @@
 - Lightweight, simple and easy-to-use local CLI backup tool
 - Manually backup multiple directories to mutliple different locations
 - Uses a profile system to keep track of and identify potentially unlimited pairs of source and backup locations
-- 
+\
 ## Demonstration of program
 ![image](https://user-images.githubusercontent.com/45922387/132213008-89e21c81-4705-4788-a769-6eaebe6e829d.png)\
 \
